@@ -1,0 +1,227 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2866
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;\f1\fswiss\fcharset0 Helvetica;\f2\fmodern\fcharset0 Courier;
+\f3\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue0;\red69\green60\blue204;
+\red53\green134\blue255;\red20\green160\blue194;\red29\green184\blue14;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0\cname textColor;\cssrgb\c0\c0\c0;\cssrgb\c34510\c33725\c83922;
+\cssrgb\c25490\c61176\c100000;\cssrgb\c0\c68627\c80392;\cssrgb\c7059\c75294\c5490;}
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf2 From: Jan Graffelman <jan.graffelman@upc.edu>\
+Subject: Re: cleanup\
+Date: September 26, 2025 at 18:02:17 EDT\
+To: "De Leeuw, Jan" <jan@deleeuwpdx.net>\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs24 \cf2 \
+\pard\pardeftab720\sa280\partightenfactor0
+
+\f2\fs28 \cf3 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec3 Hello Jan,\
+Thank you very, very much for the GLSPCA markdown document. It will help me to get going to using precision weights in LR-LDA where I need this, because there is a V matrix.\'a0\
+I verified equivalence of glsAdd with type=2 with the SVD, found a problem with type=1, and make some notes. See the attached.\
+I will go out with Nit this weekend, the most clever and beautiful dog I've ever known.\
+Cheers,\
+Jan\
+\pard\pardeftab720\partightenfactor0
+\cf3 On 24/09/2025 18:29, De Leeuw, Jan wrote:\
+\pard\pardeftab720\partightenfactor0
+\cf4 \strokec4 \
+\pard\pardeftab720\partightenfactor0
+\cf4 \
+\pard\pardeftab720\partightenfactor0
+\cf4 \
+\pard\pardeftab720\partightenfactor0
+\cf3 \strokec3 ------------------------------------------------------------------\
+Jan de Leeuw, Distinguished Professor Emeritus, UCLA Statistics\'a0\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://jansweb.netlify.app/"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://jansweb.netlify.app}} ******** {\field{\*\fldinst{HYPERLINK "https://github.com/deleeuw"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://github.com/deleeuw}}\
+\pard\pardeftab720\partightenfactor0
+\cf3 ------------------------------------------------------------------\
+Remember,\'a0no matter where you go,\'a0there you are. (Buckaroo Banzai)\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf4 \strokec4 \
+\pard\pardeftab720\partightenfactor0
+\cf6 \strokec6 On Sep 22, 2025, at 13:42, Jan Graffelman {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 <jan.graffelman@upc.edu>}} wrote:\
+\pard\pardeftab720\sa280\partightenfactor0
+\cf6 Hello again, Jan,\
+Thanks for all the hints and materials. I hope to sort it out with your suggestions. As it stands now, I can do the precision weighting in Aitchison's log-ratio principal component analysis (LR-PCA). I just feed the log transformed compositions into wAddPCA, using both column and row adjustments, and the weight matrix just contains the reciprocals of all variances (or standard deviations) for the entries. I found those variances by using the delta method and assuming that multinomial counts underly the compositions. This seems to work.\
+Because there are often different groups in the data, given by some additional categorical variable, in practice one will want to this for LR-LDA, where the precision weighting may help to discriminate groups. So that's why I need to be able to do the elementwise weighting while having LDA's term S^\{-1/2\} around. The canonical correlation case will be similar.\
+The elementwise weighting offered by WALS looks especially promising in the case of parts that are rare in one group, but common in another. In that case, an overall weight for the whole column makes little sense, as precision will vary along the observations.\'a0WALS could be an alternative to the use of robust methods that have been proposed for compositional data to reduce the effect of outliers.\
+I will be happy to share some draft by the time I got the elementwise weighting solved for LR-LDA.\
+My latest work (attached) is on relations between genotype and allele compositions, and also shows the relationships between the LR-PCA based on genotypes or alleles. It is essentially multivariate analysis, though it may be too genetic to your taste. I sent this to a journal called Molecular Ecology Resources which is a genetics/ecology journal, but with a strong interest for methodological contributions. It got fairly positive reviews on the first round, and I expect the update will be accepted.\
+Best wishes,\
+Jan\'a0\
+\pard\pardeftab720\partightenfactor0
+\cf6 On 22/09/2025 18:20, De Leeuw, Jan wrote:\
+\pard\pardeftab720\partightenfactor0
+\cf7 \strokec7 If it is just a matter of approximating X by Y=AB\'92, with no further\
+restrictions on A and B, then one of the papers I attached previously\
+shows that majorization is not needed and the problem can\'a0\
+be solved with SVD.\
+\
+Also, just for fun, I attach what I am currently working on, which\
+is vaguely related.\
+\
+\
+\'97 Jan\
+\
+------------------------------------------------------------------\
+Jan de Leeuw, Distinguished Professor Emeritus, UCLA Statistics\'a0\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://jansweb.netlify.app/"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://jansweb.netlify.app}} ******** {\field{\*\fldinst{HYPERLINK "https://github.com/deleeuw"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://github.com/deleeuw}}\
+\pard\pardeftab720\partightenfactor0
+\cf7 ------------------------------------------------------------------\
+Remember,\'a0no matter where you go,\'a0there you are. (Buckaroo Banzai)\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf7 \
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf7 On Sep 22, 2025, at 09:10, Jan Graffelman {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 <jan.graffelman@upc.edu>}} wrote:\
+\pard\pardeftab720\sa280\partightenfactor0
+\cf7 Hello Jan,\uc0\u8232 \u8232 Here is a bit of an update.\uc0\u8232 \u8232 Last July I finally became full professor. The internal promotion procedure has lasted been for almost two-and-a-half year, a long and burocratical way.\uc0\u8232 \u8232 I'm very much into WALS again these days. The analysis of compositions by means of Aitchison's logratio approach is, in general, outlier-prone. WALS can help by using elementwise weights, weighting the logratios by their precision. I use the inverse of the asymptotic variance of the ratios for this weighting, assuming multinomial counts that underlie the compositions. It seems to work quite sensibly for some datasets. Due to the precision weights, outliers can get pulled in, and group homogeneity can improve. I'm thinking about writing it down.\uc0\u8232 \u8232 I remember we have commented GLS based multivariate methods at some point, which seemed hard to resolve via WALS. Standard canonical correlations (CCo) and LDA can be done via WALS with unit weights simply by feeding the transformed data matrix into wAddPCA, but that is not going to work satisfactorily with non-unit weights, because of the transformation with the inverse of the covariance matrices (two in CCo, one in LDA). Did we treat these cases? It doesn't look like or I can't find it back.\uc0\u8232 \u8232 Best wishes,\uc0\u8232 \u8232 Jan\'a0\uc0\u8232 \u8232 \
+\pard\pardeftab720\partightenfactor0
+\cf7 On 18/02/2025 17:29, De Leeuw, Jan wrote:\
+Thanks, Jan. I hope you are well too. And congrats on the\
+acceptance.\
+\
+Good paper, as always, and some interesting points in the\
+discussion. In line 375 in the final version it says\
+\'93my metric multidimensional scaling\'94 \'97 you mean \'93by metric multidimensional\
+scaling\'94.\'a0\
+\
+Does Nit live with you ? Beautiful dog.\'a0\
+\
+All the best \'97 Jan\
+\
+------------------------------------------------------------------\
+Jan de Leeuw, Distinguished Professor Emeritus, UCLA Statistics\'a0\
+\pard\pardeftab720\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://jansweb.netlify.app/"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://jansweb.netlify.app}} ******** {\field{\*\fldinst{HYPERLINK "https://github.com/deleeuw"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 https://github.com/deleeuw}}\
+\pard\pardeftab720\partightenfactor0
+\cf7 ------------------------------------------------------------------\
+Remember,\'a0no matter where you go,\'a0there you are. (Buckaroo Banzai)\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+\
+On Feb 17, 2025, at 06:14, Jan Graffelman {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 <jan.graffelman@upc.edu>}} wrote:\
+Hello Jan,\
+\
+I hope this finds you well. The article on picturing the correlation matrix but with column adjustments has been accepted for publication in JCGS last week. I remember I promised to share the interaction on the review of the article with you. The paper has changed quite a lot since first submission.\
+\
+So find attached:\
+\
+- The originally submitted article\
+- First round reviewer feedback with my rebuttal\
+- The re-submitted article (changes tracked in blue)\
+- Second round reviewer feedback with my rebuttal\
+- The final article (changes tracked in blue)\
+\
+There are some discussions you might find interesting (on RMSE, for example).\
+\
+At the end of the day, I learned quite a lot from trying to minimize Eq. (4), but the obtained visualizations are not great, and the gains in RMSE only very minor. Nevertheless, the article makes some points which are worth making, I think.\
+\
+Our AS paper was a better paper. But even for the case of a single scalar adjustment people will have to "unlearn" that orthogonal vectors do not necessarily represent variables with zero correlation, and that is probably already a long way to go. By the way, the AS paper has received some citations by now, apparently all in non-stats, applied journals.\
+\
+The Correlplot package can be further improved on the graphical side, which I will probably do at some point.\
+\
+Meanwhile I have met "Nit" (= Night; see attached photo) the most bright and agile dog I've ever seen! Her behaviour is full of interesting successful survival strategies that witness close co-evolution with humans.\
+\
+Have a nice day and best wishes,\
+\
+Jan\
+\
+-- \
+Jan Graffelman\
+Dpt. of Statistics and Operations Research\
+Universitat Polit\'e8cnica de Catalunya\
+Campus Nord\
+Building C5, 2nd floor, office 212A\
+Carrer Jordi Girona, 1-3\
+08034, Barcelona, Spain\
+email: {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 jan.graffelman@upc.edu}}\
+web: {\field{\*\fldinst{HYPERLINK "http://www-eio.upc.es/~jan"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 http://www-eio.upc.es/~jan}}\
+tel: +34-93-4011739\
+fax: +34-93-4016575\
+<Submission03.pdf><Submission02.pdf><Submission01.pdf><JCGSRebuttal02.pdf><JCGSRebuttal01.pdf><Nit.jpg>\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3 \cf7 -- \
+Jan Graffelman\
+Dpt. of Statistics and Operations Research\
+Universitat Polit\'e8cnica de Catalunya\
+Campus Nord\
+Building C5, 2nd floor, office 212A\
+Carrer Jordi Girona, 1-3\
+08034, Barcelona, Spain\
+email: {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 jan.graffelman@upc.edu}}\
+web: {\field{\*\fldinst{HYPERLINK "http://www-eio.upc.es/~jan"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 http://www-eio.upc.es/~jan}}\
+tel: +34-93-4011739\
+fax: +34-93-4016575\
+\pard\pardeftab720\partightenfactor0
+
+\f2 \cf7 \
+\pard\pardeftab720\partightenfactor0
+
+\f3 \cf6 \strokec6 -- \
+Jan Graffelman\
+Dpt. of Statistics and Operations Research\
+Universitat Polit\'e8cnica de Catalunya\
+Campus Nord\
+Building C5, 2nd floor, office 212A\
+Carrer Jordi Girona, 1-3\
+08034, Barcelona, Spain\
+email: {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 jan.graffelman@upc.edu}}\
+web: {\field{\*\fldinst{HYPERLINK "http://www-eio.upc.es/~jan"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 http://www-eio.upc.es/~jan}}\
+tel: +34-93-4011739\
+fax: +34-93-4016575\
+\pard\pardeftab720\partightenfactor0
+
+\f2 \cf6 <HWELR10Bib.pdf>\
+\pard\pardeftab720\partightenfactor0
+\cf4 \strokec4 \
+\pard\pardeftab720\partightenfactor0
+
+\f3 \cf3 \strokec3 -- \
+Jan Graffelman\
+Dpt. of Statistics and Operations Research\
+Universitat Polit\'e8cnica de Catalunya\
+Campus Nord\
+Building C5, 2nd floor, office 212A\
+Carrer Jordi Girona, 1-3\
+08034, Barcelona, Spain\
+email: {\field{\*\fldinst{HYPERLINK "mailto:jan.graffelman@upc.edu"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 jan.graffelman@upc.edu}}\
+web: {\field{\*\fldinst{HYPERLINK "http://www-eio.upc.es/~jan"}}{\fldrslt \cf5 \ul \ulc5 \strokec5 http://www-eio.upc.es/~jan}}\
+tel: +34-93-4011739\
+fax: +34-93-4016575\
+}

@@ -1,0 +1,356 @@
+---
+title:  "GLS PCA"
+author: 
+- Jan de Leeuw - University of California Los Angeles
+- Jan Graffelman - Universitat Politècnica de Catalunya
+date:   "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warnings = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(fig.align="center")
+knitr::opts_chunk$set(fig.width = 5, fig.height = 5) 
+```
+
+\newcommand{\btilde}[1]{\mathbf{\tilde{\rm #1}}}
+\newcommand{\half}{\ensuremath{\frac{1}{2}}}
+\newcommand{\bhat}[1]{\mathbf{\hat{\rm #1}}}
+
+\newcommand{\bC}{\ensuremath{\mathbf C}}
+\newcommand{\bD}{\ensuremath{\mathbf D}}
+\newcommand{\bE}{\ensuremath{\mathbf E}}
+\newcommand{\bF}{\ensuremath{\mathbf F}}
+\newcommand{\bbF}{\btilde{\ensuremath{\mathbf F}}}
+\newcommand{\bhF}{\bhat{\ensuremath{\mathbf F}}}
+\newcommand{\bG}{\ensuremath{\mathbf G}}
+\newcommand{\bH}{\ensuremath{\mathbf H}}
+\newcommand{\bI}{\ensuremath{\mathbf I}}
+\newcommand{\bJ}{\ensuremath{\mathbf J}}
+\newcommand{\bK}{\ensuremath{\mathbf K}}
+\newcommand{\bL}{\ensuremath{\mathbf L}}
+\newcommand{\bLambda}{\ensuremath{\mathbf \Lambda}}
+\newcommand{\bM}{\ensuremath{\mathbf M}}
+\newcommand{\bN}{\ensuremath{\mathbf N}}
+\newcommand{\bnu}{\ensuremath{\boldsymbol \nu}}
+\newcommand{\normbnu}{{\parallel \boldsymbol \nu} \parallel}
+\newcommand{\bO}{\ensuremath{\mathbf O}}
+\newcommand{\bZero}{\ensuremath{\mathbf 0}}
+\newcommand{\bOmega}{\ensuremath{\mathbf \Omega}}
+\newcommand{\bP}{\ensuremath{\mathbf P}}
+\newcommand{\bPhi}{\ensuremath{\mathbf \Phi}}
+\newcommand{\bPsi}{\ensuremath{\mathbf \Psi}}
+\newcommand{\bQ}{\ensuremath{\mathbf Q}}
+\newcommand{\bR}{\ensuremath{\mathbf R}}
+\newcommand{\bS}{\ensuremath{\mathbf S}}
+\newcommand{\bSp}{\ensuremath{{\mathbf S}{\mathbf S}{\mathbf P}}}
+\newcommand{\bSigma}{\ensuremath{\mathbf \Sigma}}
+\newcommand{\bT}{\ensuremath{\mathbf T}}
+\newcommand{\bhT}{\bhat{\ensuremath{\mathbf T}}}
+\newcommand{\bTeta}{\ensuremath{\mathbf \Theta}}
+\newcommand{\bteta}{\ensuremath{\boldsymbol \theta}}
+\newcommand{\trace}[1]{\mbox{tr}(#1)}
+\newcommand{\bU}{\ensuremath{\mathbf U}}
+\newcommand{\bhU}{\ensuremath{\bhat{\mathbf U}}}
+\newcommand{\bV}{\ensuremath{\mathbf V}}
+\newcommand{\bhV}{\ensuremath{\bhat{\mathbf V}}}
+\newcommand{\bvarepsilon}{{\boldsymbol{\varepsilon}}}
+\newcommand{\bW}{\ensuremath{\mathbf W}}
+\newcommand{\bhW}{\bhat{\ensuremath{\mathbf W}}}
+\newcommand{\bX}{\ensuremath{\mathbf X}}
+\newcommand{\bY}{\ensuremath{\mathbf Y}}
+\newcommand{\bGamma}{\ensuremath{\mathbf \Gamma}}
+\newcommand{\bhGamma}{\bhat{{\ensuremath{\mathbf \Gamma}}}}
+\newcommand{\bZ}{\ensuremath{\mathbf Z}}
+\newcommand{\bZDZ}{{\bZ' \bD_c \bZ}}
+\newcommand{\bZDZmh}{{(\bZ' \bD_c \bZ})^{-1/2}}
+\newcommand{\bZDZm}{{(\bZ' \bD_c \bZ})^{-1}}
+\newcommand{\bZDZph}{{(\bZ' \bD_c \bZ})^{1/2}}
+\newcommand{\bZp}{{\left[ \bone \mid \bZ \right]}}
+\newcommand{\rowpro}{\bD_r^{-1} \bP - \bone \bc'}
+\newcommand{\bproj}{ \bDch \bZ {(\bZ' \bD_c \bZ)}^{-1} \bZ' \bDch}
+\newcommand{\bpron}{ \bDrh \bZ {(\bZ' \bD_r \bZ)}^{-1} \bZ' \bDrh}
+\newcommand{\bSigxx}{{\bSigma}_{xx}}
+\newcommand{\bSigxxh}{{\bSigma}_{xx}^{1/2}}
+\newcommand{\bSigxxmh}{{\bSigma}_{xx}^{-1/2}}
+\newcommand{\bSigxxm}{{\bSigma}_{xx}^{-1}}
+\newcommand{\bSigyy}{{\bSigma}_{yy}}
+\newcommand{\bSigyyh}{{\bSigma}_{yy}^{1/2}}
+\newcommand{\bSigyymh}{{\bSigma}_{yy}^{-1/2}}
+\newcommand{\bSigyym}{{\bSigma}_{yy}^{-1}}
+\newcommand{\bSigxy}{{\bSigma}_{xy}}
+\newcommand{\bSigyx}{{\bSigma}_{yx}}
+\newcommand{\bRxx}{{\bR}_{xx}}
+\newcommand{\bSxx}{{\bS}_{xx}}
+\newcommand{\bRxxh}{{\bR}_{xx}^{1/2}}
+\newcommand{\bRxxmh}{{\bR}_{xx}^{-1/2}}
+\newcommand{\bRxxm}{{\bR}_{xx}^{-1}}
+\newcommand{\bRyy}{{\bR}_{yy}}
+\newcommand{\bSyy}{{\bS}_{yy}}
+\newcommand{\bRyyh}{{\bR}_{yy}^{1/2}}
+\newcommand{\bRyymh}{{\bR}_{yy}^{-1/2}}
+
+\newcommand{\bSyyh}{{\bS}_{yy}^{1/2}}
+\newcommand{\bSyymh}{{\bS}_{yy}^{-1/2}}
+
+\newcommand{\bSxxh}{{\bS}_{xx}^{1/2}}
+\newcommand{\bSxxmh}{{\bS}_{xx}^{-1/2}}
+\newcommand{\bDmh}{{\bD}^{-1/2}}
+
+\newcommand{\bRyym}{{\bR}_{yy}^{-1}}
+\newcommand{\bRxy}{{\bR}_{xy}}
+\newcommand{\bSxy}{{\bS}_{xy}}
+\newcommand{\bSyx}{{\bS}_{yx}}
+
+\newcommand{\bRyx}{{\bR}_{yx}}
+
+# Introduction
+
+This document seeks low-rank approximations for a given matrix based on GLS by iteratively minimizing a loss function.
+
+# Code
+
+```{r datageneration}
+set.seed(12345)
+x <- matrix(rnorm(40), 10, 4)
+x <- apply(x, 2, function(x) x - mean(x))
+u <- crossprod(matrix(rnorm(100), 10, 10)) / 10
+v <- crossprod(matrix(rnorm(16), 4, 4)) / 4
+```
+
+
+```{r functionsjandl}
+#install.packages("RSpectra")
+library("RSpectra")
+
+ulsPCA <- function(x, p) {
+  x <- apply(x, 2, function(z) z - mean(z))
+  s <- svd(x, nu = p, nv = p)
+  a <- s$u
+  b <- s$v %*% diag(s$d[1:p])
+  return(list(a = a, b = b, ab = tcrossprod(a, b)))
+}
+
+
+ulsAdd <- function(x) {
+  x <- apply(x, 2, function(z) z - mean(z))
+  r <- apply(x, 1, mean)
+  s <- apply(x, 2, mean)
+  m <- mean(x)
+  return(list(
+  m = m,
+  r = r - m,
+  s = s - m,
+  rs = outer(r, s, "+") + m))
+}
+
+ulsBoth <- function(x, p) {
+  h1 <- ulsAdd(x)
+  h2 <- ulsPCA(x - h1$rs, p)
+  return(list(
+    m = h1$m,
+    r = h1$r,
+    s = h1$s,
+    a = h2$a,
+    b = h2$b,
+    y = h1$rs + h2$ab
+  ))
+}
+
+glsLoss <- function(x, y, u, v) {
+  d <- x - y
+  return(sum(v * crossprod(d, (u %*% d))))
+}
+
+glsAdd <- function(x,
+                   u,
+                   v,
+                   type = 3,
+                   p = 2,
+                   itmax = 10000,
+                   eps = 1e-6,
+                   verbose = FALSE) {
+  yold <- switch(type,
+                 ulsAdd(x)$rs,
+                 ulsPCA(x, p)$ab,
+                 ulsBoth(x, p)$y
+                 )
+  sold <- glsLoss(x, yold, u, v)
+  lbdm <- eigs_sym(u, 1)$values * eigs_sym(v, 1)$values
+  itel <- 1
+  repeat {
+    d <- x - yold
+    g <- yold + u %*% d %*% v / lbdm
+    ynew <- switch(type,
+                   ulsAdd(g)$rs,
+                   ulsPCA(g, p)$ab,
+                   ulsBoth(g, p)$y
+                   )
+    snew <- glsLoss(x, ynew, u, v)
+    if (verbose) {
+      cat(
+        "itel ",
+        formatC(itel, format = "d"),
+        "sold ",
+        formatC(sold, digits = 10, format = "f"),
+        "snew ",
+        formatC(snew, digits = 10, format = "f"),
+        "\n"
+        )
+    }
+    if ((itel == itmax) || ((sold - snew) < eps)) {
+      break
+    }
+    itel <- itel + 1
+    sold <- snew
+    yold <- ynew
+  }
+  return(list(y = ynew, loss = snew, itel = itel))
+}
+```
+
+```{r functionsjangr}
+eig <- function (X) {
+  out <- eigen(X)
+  V <- out$vectors
+  D <- diag(out$values)
+  return(list(V = V, D = D))
+}
+
+matrank <- function(X, symmetric = FALSE, crit = 1e-10, verbose = FALSE) 
+{
+    n <- nrow(X)
+    p <- ncol(X)
+    if (!symmetric) {
+        if (n < p) 
+            A <- X %*% t(X)
+        else A <- t(X) %*% X
+    }
+    else A <- X
+    lam <- eigen(A)$values
+    r <- sum(lam > crit)
+    lmin <- min(lam)
+    if (verbose) {
+        cat("Matrix rank = ", r, "\n")
+        cat("Smallest eigenvalue = ", lmin, "\n")
+    }
+    return(r)
+}
+```
+
+
+```{r}
+h1 <- glsAdd(x, u, v, type = 1, verbose = FALSE)
+h2 <- glsAdd(x, u, v, type = 2, verbose = FALSE)
+h3 <- glsAdd(x, u, v, type = 3, verbose = FALSE)
+
+h1loss <- round(h1$loss,4)
+h2loss <- round(h2$loss,4)
+h3loss <- round(h3$loss,4)
+
+plot(x,h1$y,main=toString(h1loss))
+matrank(h1$y)
+abline(0,1,lwd=2,col="blue")
+plot(x,h2$y,main=toString(h2loss))
+matrank(h2$y)
+abline(0,1,lwd=2,col="blue")
+plot(x,h3$y,main=toString(h3loss))
+matrank(h3$y)
+abline(0,1,lwd=2,col="blue")
+```
+
+## Classical solution with the SVD
+
+The classical way to approximate a matrix by GLS with square invertible non-diagonal weight matrices for rows and columns is obtained by the SVD in combination with transformation and backtransformation:
+
+\[
+\bX_t = \bR^{\half} \bX \bC^{\half} = \bU \bD \bV',
+\]
+
+\[
+\btilde{\bU} = \bR^{-\half} \bU \quad \mbox{and} \quad \btilde{\bV} = \bC^{-\half} \bV
+\]
+
+\[
+\bhat{\bX} = \btilde{\bU}_{[,1:k]} \bD_{[1:k,1:k]} {\btilde{\bV}_{[,1:k]}}
+\]
+
+This is coded below, and the solution is shown to be identical to the
+`glsAdd(x, u, v, type = 2)` solution.
+
+
+```{r}
+u.specdec <- eig(u)
+u.U <- u.specdec$V
+u.D <- u.specdec$D
+u.phalf <- u.U%*%sqrt(u.D)%*%t(u.U)
+u.mhalf <- u.U%*%sqrt(diag(1/diag(u.D)))%*%t(u.U)
+
+v.specdec <- eig(v)
+v.U <- v.specdec$V
+v.D <- v.specdec$D
+v.phalf <- v.U%*%sqrt(v.D)%*%t(v.U)
+v.mhalf <- v.U%*%sqrt(diag(1/diag(v.D)))%*%t(v.U)
+
+Xt <- u.phalf%*%x%*%v.phalf
+
+r <- 2
+out.svd <- svd(Xt)
+U  <- out.svd$u[,1:r]
+Ds <- diag(out.svd$d[1:r])
+V  <- out.svd$v[,1:r]
+
+Xhat <- u.mhalf%*%U%*%Ds%*%t(V)%*%v.mhalf
+
+plot(Xhat,h2$y)
+abline(0,1,lwd=2,col="blue")
+
+gof  <- sum(diag(Ds)^2)/sum(out.svd$d^2)
+gof
+loss <- sum(out.svd$d[3:4]^2)
+loss
+```
+
+## Mistake in `glsAdd(x, u, v, type = 1)` ?
+
+In general, model 1 $\mu + \alpha_i + \beta_j$ is expected to give a rank 2 approximation. But due to the column-centring `x <- apply(x, 2, function(z) z - mean(z))` it will *always* give a rank 1 solution, for `s` and `m` will be structurally zero. It seems the column centring should not be applied. This indeed gives smaller loss and a rank 2 solution as shown by the code below with `ulsAdd` redefined. Note that the modification *increases* the loss for `type=3` which calls `ulsAdd`.
+
+
+
+
+
+```{r}
+ulsAdd <- function(x) {
+#  x <- apply(x, 2, function(z) z - mean(z))
+  r <- apply(x, 1, mean)
+  s <- apply(x, 2, mean)
+  m <- mean(x)
+  return(list(
+  m = m,
+  r = r - m,
+  s = s - m,
+  rs = outer(r, s, "+") + m))
+}
+
+h1.bis <- glsAdd(x, u, v, type = 1, verbose = FALSE)
+h1.bis$loss
+h1$loss
+matrank(h1.bis$y)
+
+h3.bis <- glsAdd(x, u, v, type = 3, verbose = FALSE)
+h3.bis$loss
+
+```
+
+## Notes
+
+1. For the desired precision weighting (either in a compositional or a non-compositional context), I see I need to adapt the algorithm to allow for elementwise weighting, i.e., combine it with `wAddPCA`.
+
+2. Canonical correlation analysis (CCo) is known to provide the "best" GLS low-rank approximation to the between-set correlation matrix $\bR_{xy}$. This will no longer be true, for the model  $\mu + \alpha_i + \beta_j + \sum a_{is} b_{js}$ with $\alpha_i$ and $\beta_j$ set to zero can be expected to give a better fit, similar to the $\delta$ adjustment for $\bR$ in our AM paper.
+
+3. $\bU$ and $\bV$ are assumed positive definite. In the case of compositional canonical correlation analysis based on the centred logratio transformation, these matrices will be singular (their rows and columns sum to 0). This can be avoided by using a different transformation (the isometric logratio transformation).  
+
